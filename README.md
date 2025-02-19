@@ -1,2 +1,2 @@
 # Junior-Creators
-Junior Creators is a blogging website designed for children, encouraging them to engage in content writing while providing a user-friendly platform.
+Junior Creators is a blogging website for children, designed to encourage them to engage in content writing while ensuring a user-friendly experience.
