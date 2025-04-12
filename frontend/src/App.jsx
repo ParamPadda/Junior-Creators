@@ -3,19 +3,18 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import './App.css'
 import Home from './pages/Home';
 import Login from './components/Login';
+import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
+import Footer from './components/Footer';
+import TrendingBlogs from './components/TrendingBlogs';
+import Welcome from './pages/Welcome';
 
 function App() {
  
 
   return (
     <>
-    
-    <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/login' element={<Login/>}/>
-      <Route path='/signup' element={<Home/>}/>
-    </Routes>
-      <p class="text-3xl font-bold underline">felo</p>
+   <Welcome/>
     </>
   )
 }
