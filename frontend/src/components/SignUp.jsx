@@ -1,16 +1,19 @@
 import React from "react";
 import { Modal, Form, Input, Button } from "antd";
 
-const Login = ({ open, onCancel, onLogin, switchToSignup,switchToForget }) => {
- 
+const SignUp = ({ open, onCancel, onRegister, switchToLogin  }) => {
   return (
     <Modal
       open={open}
-      title={<div className="text-center text-xl font-semibold">Login</div>}
+      title={<div className="text-center text-xl font-semibold">Registration Form</div>}
       onCancel={onCancel}
       footer={null}
     >
-      <Form layout="vertical" onFinish={onLogin} className="space-y-4">
+      <Form layout="vertical" onFinish={onRegister} className="space-y-4">
+        <Form.Item label="Username" name="name" rules={[{ required: true }]}>
+          <Input />
+        </Form.Item>
+
         <Form.Item label="Email" name="email" rules={[{ required: true, type: "email" }]}>
           <Input />
         </Form.Item>
@@ -21,22 +24,20 @@ const Login = ({ open, onCancel, onLogin, switchToSignup,switchToForget }) => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
-            Log In
+            Sign Up
           </Button>
         </Form.Item>
-        <div  className="text-center text-sm text-blue-500 cursor-pointer hover:underline" onClick={switchToForget}>
-          Forget Password?
-          </div>
-        <div className="text-center text-sm"> Don't have an account?{" "}
+
+        <div className="text-center text-sm">  Already have an account?{" "}
           <span
-            onClick={switchToSignup}
+            onClick={switchToLogin}
             className="text-blue-500 cursor-pointer hover:underline"
           >
-            Sign Up
+            Log in
           </span></div>
       </Form>
     </Modal>
   );
 };
 
-export default Login;
+export default SignUp;
