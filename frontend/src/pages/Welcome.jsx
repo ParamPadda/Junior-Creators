@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import instance from "../../AxiosInstance";
 import img4 from "../assets/side.png";
@@ -18,14 +18,19 @@ import {
 import SignUp from "../components/SignUp";
 import OtpModal from "../components/OtpModal";
 import ForgetPassword from "../components/ForgetPassword";
+import NewPassword from "../components/NewPassword";
+import { message } from "antd";
 
 const Welcome = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [otpOpen, setOtpOpen] = useState(false);
   const [forgetOpen, setForgetOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
 
   const navigate = useNavigate();
+
+
 
   // const handleLogin = (values) => {
   //   console.log("Login Data:", values);
@@ -79,17 +84,93 @@ const Welcome = () => {
       }
     }
   };
+  const handleChangePassword =async(values)=>{
 
-  const handleOtpVerify = (otp) => {
-    console.log("Verified OTP:", otp);
-    setOtpOpen(false);
-    setLoginOpen(true); // after OTP, go to login modal
+    const email = localStorage.getItem("signupEmail");
+
+    if(values.confirmPassword !== values.newPassword){
+      console.log("Check your password again.");
+      message.error("Passwords do not match!");
+    }
+   
+    else{
+      try{
+        const response = await axios.post("http://localhost:8080/api/auth/update-password", {
+          email,
+          newPassword: values.newPassword,
+        });
+    
+        message.success("Password updated successfully!");
+        console.log("Your Updated Password",values.confirmPassword);
+    
+        setTimeout(() => {
+          setNewOpen(false);
+          setLoginOpen(true); // Show login modal after password update
+        }, 1000);
+      }catch(error){
+        console.error("Password update failed:", error);
+       message.error("Failed to update password.");
+      }
+     
+      
+    }
+
   };
+  // const handleOtpVerify = (otp) => {
+  //   console.log("Verified OTP:", otp);
+  //  email get krsakde from localStorage
 
-  const handleForget= (values)=>{
-    console.log("Given Email for Verification:",values);
-    setForgetOpen(false);
-    setOtpOpen(true); // open otp modal to verfiy otp send by backend
+  //   setOtpOpen(false);
+  //   setLoginOpen(true); // after OTP, go to login modal
+  // };
+  const handleOtpVerify = async (otp) => {
+    const email = localStorage.getItem("signupEmail"); //  Get email from localStorage
+  
+    try {
+      const response = await axios.post( "http://localhost:8080/api/email/verify-otp", { email, otp });
+  
+      if (response.data.success) {
+        console.log("Success:", response.data);
+        // localStorage.removeItem("signupEmail"); //remove email
+        setOtpOpen(false);
+         setNewOpen(true); // after OTP, go to login modal
+      } else {
+       console.log("Invalid Otp");
+      }
+    } catch (error) {
+      console.log("Error verifying OTP");
+    }
+  };
+  
+
+  // const handleForget= (values)=>{
+  //   console.log("Given Email for Verification:",values);
+
+  //   setForgetOpen(false);
+  //   setOtpOpen(true); // open otp modal to verfiy otp send by backend
+    
+  // };
+  const handleForget =async (values) => {
+    try {
+      console.log("Given Email for Verification:",values);
+      localStorage.setItem("signupEmail", values.email);
+      const response = await axios.post(
+        "http://localhost:8080/api/email/send-verification",
+        values
+      );
+      // notify();
+      message.success("email sent successfully!");
+      console.log("✅ Success:", response.data);
+      setForgetOpen(false);
+     setOtpOpen(true); // open otp modal to verfiy otp send by backend
+     
+    } catch (error) {
+      if (error.response) {
+        console.error("🚨 Email not received:", error.response.data); // Logs exact error from backend
+      } else {
+        console.error("❌ Network error:", error.message);
+      }
+    }
   };
   return (
     <>
@@ -124,6 +205,11 @@ const Welcome = () => {
             </button>
           </div>
         </div>
+
+    
+
+
+
         {/* modals /pop up dialog box ---- better than pasting modal below  */}
         <Login
           open={loginOpen}
@@ -164,6 +250,11 @@ const Welcome = () => {
           open={otpOpen}
           onCancel={() => setOtpOpen(false)}
           onVerify={handleOtpVerify}
+        />
+        <NewPassword
+          open={newOpen}
+          onCancel={() => setNewOpen(false)}
+          onUpdate={handleChangePassword}
         />
       </div>
     </>

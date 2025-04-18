@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './index.css';
+
+// import "antd/dist/reset.css"; //causing issue check later on
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import App from './App.jsx'

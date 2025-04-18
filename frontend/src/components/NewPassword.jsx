@@ -1,7 +1,7 @@
 import React,{ useEffect } from "react";
 import { Modal, Form, Input, Button } from "antd";
 
-const ForgetPassword = ({ open, onCancel, onForget, switchToLogin }) => {
+const NewPassword = ({ open, onCancel, onUpdate }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -15,7 +15,7 @@ const ForgetPassword = ({ open, onCancel, onForget, switchToLogin }) => {
       open={open}
       title={
         <div className="text-center text-xl font-semibold mb-6">
-          Forget Your Password
+          Generate Your New Password Here
         </div>
       }
       onCancel={onCancel}
@@ -23,36 +23,26 @@ const ForgetPassword = ({ open, onCancel, onForget, switchToLogin }) => {
     >
       <Form
         layout="vertical"
-        onFinish={onForget}
+        onFinish={onUpdate}
         form={form}
         className="space-y-4"
       >
-        <Form.Item
-          label="Enter Your Registered Email here & We will send a 6-digit OTP"
-          name="email"
-          rules={[{ required: true, type: "email" }]}
-        >
-          <Input placeholder="Enter your email here" />
-        </Form.Item>
-
+        <Form.Item label=" New Password" name="newPassword" rules={[{ required: true }]}>
+                 <Input.Password />
+               </Form.Item>
+         <Form.Item label=" Confirm Password" name="confirmPassword" rules={[{ required: true }]}>
+                  <Input.Password />
+                </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full">
-            Send Otp
+            Change Password
           </Button>
         </Form.Item>
 
-        <div className="text-center text-sm">
-          Go Back to{" "}
-          <span
-            onClick={switchToLogin}
-            className="text-blue-500 cursor-pointer hover:underline"
-          >
-            Log In
-          </span>
-        </div>
+        
       </Form>
     </Modal>
   );
 };
 
-export default ForgetPassword;
+export default NewPassword;
