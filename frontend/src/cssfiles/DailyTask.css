@@ -1,9 +1,4 @@
-@import "tailwindcss";
-
-/* *{
-    background-color:#FFFDF9;
-} */
-/* hide horizontal scrollbar */
+/* DailyTask.css */
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

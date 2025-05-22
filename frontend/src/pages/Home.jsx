@@ -1,57 +1,69 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import TrendingBlogs from "../components/TrendingBlogs"; // Assuming you already have this
+import Navbar from "../components/Navbar";
+import homeBg from "../assets/homeBg.png";
+// import Sidebar from "../components/Sidebar";
+import Main from "../components/HomeMainSection";
+import Footer from '../components/Footer'; 
+import HomeMainSection from "../components/HomeMainSection";
 
 const Home = () => {
   return (
     <>
-      {/* Navbar */}
-      <nav className="bg-blue-600 p-4 text-white">
-        <div className="flex justify-between items-center container mx-auto">
-          <Link to="/" className="text-2xl font-semibold">
-            Junior Creator
-          </Link>
-          <div className="bg-white w-2xl rounded-lg">
-            <input type="search" placeholder="search" className="text-black"  />
-          </div>
-          <div>
-            <Link to="/profile" className="mx-4">Profile</Link>
-            <Link to="/about" className="mx-4">About</Link>
-            <Link to="/contact" className="mx-4">Contact</Link>
-          </div>
-        </div>
-      </nav>
-  
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white h-screen flex flex-col justify-center items-center text-center">
-        <h1 className="text-5xl font-extrabold mb-4">Welcome to Junior Creator</h1>
-        <p className="text-xl mb-8">Create, Share, and Explore Stories</p>
-        <Link to="/create" className="bg-white text-blue-600 px-8 py-3 rounded-lg shadow-lg hover:bg-gray-200">
-          Write Your First Blog
-        </Link>
-      </section>
+     
 
-      {/* Trending Blogs Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto text-center mb-8">
-          <h2 className="text-3xl font-bold text-blue-600">Trending Blogs</h2>
-          <p className="text-lg text-gray-600">Check out the latest posts from Junior Creators</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 container mx-auto px-4">
-          <TrendingBlogs /> {/* my component for displaying trending blogs */}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-blue-600 text-white py-6 mt-16">
-        <div className="container mx-auto text-center">
-          <p>&copy; 2025 Junior Creator. All Rights Reserved.</p>
-          <div className="mt-4">
-            <Link to="/privacy" className="mx-4">Privacy Policy</Link>
-            <Link to="/terms" className="mx-4">Terms of Service</Link>
+       <div className="bg-[#FFFCF7] min-h-screen text-[#1A1A1A] w-screen">
+      {/* <Navbar /> */}
+      {/* <section className="max-w-7xl mx-auto px-6 py-10">
+        <div className="flex flex-col items-center text-center">
+          <img
+            src={homeBg}
+            alt="Junior Creator Hero"
+            className="w-[350px] md:w-2xl mb-6"
+          />
+          <h1 className="text-4xl font-bold  mb-6">Junior Creator</h1>
+          <div className="flex gap-4 mb-8">
+            <button className="bg-[#F0733F] hover:bg-[#e0632c] text-white px-6 py-2 rounded-xl cursor-pointer">
+              Start Writing
+            </button>
+            <button className="px-6 py-2 rounded-xl border-gray-300 hover:bg-[#f1e9e6] cursor-pointer">
+              Explore Blogs
+            </button>
           </div>
         </div>
-      </footer>
+
+        <div className="bg-white shadow-md p-6 rounded-xl mb-10">
+          <h2 className="text-lg font-semibold mb-2">Featured Post</h2>
+          <h3 className="text-xl font-bold mb-1">The Benefits of Daily Writing for Kids</h3>
+          <p className="text-sm text-gray-600 mb-2">
+            Discover how daily writing can improve children's creativity,
+            critical thinking skills, and academic performance.
+          </p>
+          <a href="#" className="text-blue-600 hover:underline text-sm font-medium">Read More</a>
+        </div>
+
+        <h2 className="text-xl font-semibold mb-4">Writing Prompts</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-[#FCDDD3] p-4 rounded-xl">
+            <h3 className="font-semibold text-lg mb-1">A Mysterious Adventure</h3>
+            <p className="text-sm text-gray-700">Write a story about discovering a hidden world beneath your school.</p>
+          </div>
+          <div className="bg-[#EBF4D9] p-4 rounded-xl">
+            <h3 className="font-semibold text-lg mb-1">The Future of Transportation</h3>
+            <p className="text-sm text-gray-700">Describe how people might travel 50 years from now.</p>
+          </div>
+          <div className="bg-[#E4E8F7] p-4 rounded-xl">
+            <h3 className="font-semibold text-lg mb-1">My Favorite Animal</h3>
+            <p className="text-sm text-gray-700">Share why you love a particular animal and what makes it special.</p>
+          </div>
+        </div>
+      </section> */}
+      <HomeMainSection/>
+    </div>
+
+     
+
+     
       
     </>
   );
