@@ -34,6 +34,8 @@ const CreateBlog = () => {
   };
   const [imageFile, setImageFile] = useState(null);
   const [audioFile, setAudioFile] = useState(null);
+  const userEmail = localStorage.getItem('email'); // ⬅️ get email from localStorage
+
 const onFinish = async (values) => {
     const formData = new FormData();
     console.log(formData)
@@ -41,7 +43,7 @@ const onFinish = async (values) => {
     formData.append('about', values.about);
     formData.append('image', imageFile);
     formData.append('audio', audioFile);
-
+formData.append('email', userEmail); 
     try {
       const response = await axios.post('http://localhost:8080/api/blogs/addBlogs', formData, {
         headers: {
@@ -130,7 +132,9 @@ const onFinish = async (values) => {
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit">Publish Blog</Button>
+        <Button type="primary" htmlType="submit">PublishQuiz Zone
+
+ Blog</Button>
       </Form.Item>
     </Form>
       </div>

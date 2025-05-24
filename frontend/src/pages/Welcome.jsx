@@ -32,37 +32,38 @@ const Welcome = () => {
 
 
 
-  const handleLogin = (values) => {
-    console.log("Login Data:", values);
-    setLoginOpen(false);
+  // const handleLogin = (values) => {
+  //   console.log("Login Data:", values);
+  //   setLoginOpen(false);
 
-    navigate("/home");
-  };
+  //   navigate("/home");
+  // };
 
   // const handleRegister = (values) => {
   //   console.log("Register Data:", values);
   //   setRegisterOpen(false);
   //   setOtpOpen(true); // it helps me to show  OTP modal
   // };
-  // const handleLogin = async (values) => {
-  //   try {
-  //     console.log("📤 Sending login  data:", values);
-  //     const response = await instance.post("/auth/login", values);
-  //     // notify();
-  //     console.log("✅  login Success:", response.data);
-  //     // console.log(response.data.jwtToken);
-  //     localStorage.setItem("jwtToken", response.data.jwtToken);
-  //     setLoginOpen(false);
-
-  //     navigate("/home");
-  //   } catch (error) {
-  //     if (error.response) {
-  //       console.error("🚨 Login failed:", error.response.data); // Logs exact error from backend
-  //     } else {
-  //       console.error("❌ Network error:", error.message);
-  //     }
-  //   }
-  // };
+  const handleLogin = async (values) => {
+    try {
+      console.log("📤 Sending login  data:", values);
+      const response = await axios.post("http://localhost:8080/api/auth/login", values);
+      // notify();
+      console.log("✅  login Success:", response.data);
+      // console.log(response.data.jwtToken);
+      localStorage.setItem("jwtToken", response.data.jwtToken);
+      localStorage.setItem("email", response.data.email);
+      localStorage.setItem("name", response.data.name);
+      setLoginOpen(false);
+      navigate("/home");
+    } catch (error) {
+      if (error.response) {
+        console.error("🚨 Login failed:", error.response.data); // Logs exact error from backend
+      } else {
+        console.error("❌ Network error:", error.message);
+      }
+    }
+  };
 
   const handleRegister = async (values) => {
     try {
