@@ -91,33 +91,44 @@ const Dashboard = () => {
     fetchCompletedTasks();
   }, []);
 
-  const handleDeleteBlog = async (blog) => {
-    console.log("blog.id", blog.id);
-    const email = localStorage.getItem("email");
+const handleDeleteBlog = async (blogId) => {
+  const email = localStorage.getItem("email");
+  console.log("Deleting blog with ID:", blogId);
+  if (!blogId) {
+    console.error("No blog ID provided.");
+    return;
+  }
 
-    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+  if (!window.confirm("Are you sure you want to delete this blog?")) return;
 
-    try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/blogs/deleteBlog/${blog.id}/${email}`
-      );
+  try {
+    const encodedEmail = encodeURIComponent(email);
+const response = await axios.delete(
+  `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${encodedEmail}`
+);
 
-      if (response.data.success) {
-        toast.success("Blog deleted successfully");
-        // Refresh blogs list after deletion
-        fetchBlogs();
-      } else {
-        toast.error(response.data.message || "Failed to delete blog");
-      }
-    } catch (error) {
-      console.error("Error deleting blog:", error);
-      toast.error("Server error: Failed to delete blog");
+    // const response = await axios.delete(
+    //   `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${email}`
+    // );
+
+    if (response.data.success) {
+      toast.success("Blog deleted successfully");
+      fetchBlogs();
+    } else {
+      toast.error(response.data.message || "Failed to delete blog");
     }
-  };
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    toast.error("Server error: Failed to delete blog");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 overflow-x-hidden">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Profile Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        Profile Dashboard
+      </h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Section */}
         <div className="lg:col-span-2 flex flex-col gap-6">
@@ -190,10 +201,11 @@ const Dashboard = () => {
                   <div className="flex gap-2">
                     <Button icon={<FontAwesomeIcon icon={faEdit} />} />
                     <Button
-                      danger
-                      icon={<FontAwesomeIcon icon={faTrash} />}
-                      onClick={() => handleDeleteBlog(blog)}
-                    />
+  danger
+  icon={<FontAwesomeIcon icon={faTrash} />}
+  onClick={() => handleDeleteBlog(blog.id)}
+/>
+
                   </div>
                 </li>
               ))}
@@ -238,7 +250,8 @@ const Dashboard = () => {
               <FontAwesomeIcon icon={faLightbulb} /> Daily Task
             </h3>
             <p className="text-sm text-gray-600 mb-3">
-              List of Daily Tasks completed by you, for those who are having subscription.
+              List of Daily Tasks completed by you, for those who are having
+              subscription.
             </p>
             {completedTasks.length === 0 ? (
               <p className="text-gray-500 text-sm">No completed tasks yet.</p>
