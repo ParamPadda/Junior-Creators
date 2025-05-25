@@ -28,6 +28,13 @@ const DailyTask = () => {
       setSubscribed(true);
     }
 
+    // Load completedTasks from localStorage first to keep UI consistent immediately
+    const storedCompletedTasks = localStorage.getItem("completedTasks");
+    if (storedCompletedTasks) {
+      setCompletedTasks(JSON.parse(storedCompletedTasks));
+    }
+
+    // Then fetch fresh data from backend (optional)
     fetchDailyTasks();
   }, []);
 
@@ -48,6 +55,11 @@ const DailyTask = () => {
         );
         if (compRes.data.success) {
           setCompletedTasks(compRes.data.completedTasks);
+          // Also sync with localStorage again after backend fetch
+          localStorage.setItem(
+            "completedTasks",
+            JSON.stringify(compRes.data.completedTasks)
+          );
         }
       }
     } catch (err) {
@@ -82,17 +94,32 @@ const DailyTask = () => {
       return;
     }
 
+    const task = dailyTasks.find((task) => task._id === id);
+
     setLoadingToggle(id); // Start loading for this task
 
     try {
       await axios.post(`http://localhost:8080/api/tasks/mark-read/${id}`, {
         email: email,
         status: isCompleted ? "undo" : "complete",
+        task: isCompleted
+          ? null
+          : {
+              id: task._id,
+              title: task.title,
+              description: task.description,
+            },
       });
 
-      setCompletedTasks((prev) =>
-        isCompleted ? prev.filter((taskId) => taskId !== id) : [...prev, id]
-      );
+      // Update completed tasks locally
+      setCompletedTasks((prev) => {
+        const updated = isCompleted
+          ? prev.filter((taskId) => taskId !== id)
+          : [...prev, id];
+        // Sync with localStorage
+        localStorage.setItem("completedTasks", JSON.stringify(updated));
+        return updated;
+      });
 
       toast.success(isCompleted ? "Marked as incomplete" : "Marked as completed");
     } catch (error) {
@@ -116,10 +143,7 @@ const DailyTask = () => {
         className="z-50"
       >
         <div className="text-center relative">
-          <FontAwesomeIcon
-            icon={faLock}
-            className="text-3xl text-blue-500 mb-3"
-          />
+          <FontAwesomeIcon icon={faLock} className="text-3xl text-blue-500 mb-3" />
           <h2 className="text-xl font-bold">Subscribe to Access Daily Tasks</h2>
           <p className="text-gray-600 mt-1 mb-4">
             Get creative challenges and activities every day!
@@ -180,15 +204,13 @@ const DailyTask = () => {
                     <div className="p-4 flex flex-col justify-between h-[calc(100%-10rem)]">
                       <div>
                         <h3 className="text-lg font-bold">{task.title}</h3>
-                        <p className="text-sm text-gray-700 mt-1">
-                          {task.description}
-                        </p>
+                        <p className="text-sm text-gray-700 mt-1">{task.description}</p>
                       </div>
                       <div className="mt-4">
                         {completedTasks.includes(task._id) ? (
                           <Button
                             type="warning"
-                            className="w-full flex items-center justify-center gap-2"
+                            className="w-full flex items-center justify-center gap-2 "
                             onClick={() => toggleComplete(task._id)}
                             disabled={loadingToggle === task._id}
                           >

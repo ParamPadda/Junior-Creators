@@ -253,17 +253,23 @@ const response = await axios.delete(
               List of Daily Tasks completed by you, for those who are having
               subscription.
             </p>
-            {completedTasks.length === 0 ? (
-              <p className="text-gray-500 text-sm">No completed tasks yet.</p>
-            ) : (
-              <ul className="list-disc list-inside">
-                {completedTasks.map((taskId) => (
-                  <li key={taskId} className="text-gray-700">
-                    Task ID: {taskId}
-                  </li>
-                ))}
-              </ul>
-            )}
+           {completedTasks.length === 0 ? (
+  <p className="text-gray-500 text-sm">No completed tasks yet.</p>
+) : (
+  <ul className="list-disc list-inside space-y-1">
+    {completedTasks.map((task) => (
+      <li key={task._id} className="text-gray-700">
+         <span className="font-semibold">{task.title}</span>
+        {task.blogTitle && (
+          <>
+            {" "}– Blog: <span className="text-blue-600 italic">{task.blogTitle}</span>
+          </>
+        )}
+      </li>
+    ))}
+  </ul>
+)}
+
           </div>
         </div>
       </div>
