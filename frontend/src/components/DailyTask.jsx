@@ -17,8 +17,8 @@ const DailyTask = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [completedTasks, setCompletedTasks] = useState([]);
   const [dailyTasks, setDailyTasks] = useState([]);
-  const [loadingTasks, setLoadingTasks] = useState(false); // Loading for fetching tasks
-  const [loadingToggle, setLoadingToggle] = useState(null); // Loading for toggling one task (stores task id)
+  const [loadingTasks, setLoadingTasks] = useState(false);
+  const [loadingToggle, setLoadingToggle] = useState(null);
 
   useEffect(() => {
     const isSubscribed = localStorage.getItem("dailyTaskSubscribed") === "true";
@@ -28,17 +28,15 @@ const DailyTask = () => {
       setSubscribed(true);
     }
 
-    // Load completedTasks from localStorage first to keep UI consistent immediately
+    // Load completedTasks from localStorage first
     const storedCompletedTasks = localStorage.getItem("completedTasks");
     if (storedCompletedTasks) {
       setCompletedTasks(JSON.parse(storedCompletedTasks));
     }
 
-    // Then fetch fresh data from backend (optional)
     fetchDailyTasks();
   }, []);
 
-  // Fetch tasks & completed tasks for the logged-in user
   const fetchDailyTasks = async () => {
     setLoadingTasks(true);
     try {
@@ -48,18 +46,19 @@ const DailyTask = () => {
       }
 
       // Fetch completed tasks for this user by email
-      const userEmail = localStorage.getItem("userEmail");
+      // Fix: Use consistent email key
+      const userEmail = localStorage.getItem("userEmail") || localStorage.getItem("email");
       if (userEmail) {
         const compRes = await axios.get(
           `http://localhost:8080/api/tasks/completed/${userEmail}`
         );
         if (compRes.data.success) {
-          setCompletedTasks(compRes.data.completedTasks);
-          // Also sync with localStorage again after backend fetch
-          localStorage.setItem(
-            "completedTasks",
-            JSON.stringify(compRes.data.completedTasks)
+          // Extract just the task IDs from completed tasks for frontend state
+          const completedTaskIds = compRes.data.completedTasks.map(task => 
+            typeof task === 'object' ? task._id || task.id : task
           );
+          setCompletedTasks(completedTaskIds);
+          localStorage.setItem("completedTasks", JSON.stringify(completedTaskIds));
         }
       }
     } catch (err) {
@@ -88,15 +87,21 @@ const DailyTask = () => {
 
   const toggleComplete = async (id) => {
     const isCompleted = completedTasks.includes(id);
-    const email = localStorage.getItem("email");
+    // Fix: Use consistent email key
+    const email = localStorage.getItem("userEmail") || localStorage.getItem("email");
+    
     if (!email) {
       toast.error("User not logged in");
       return;
     }
 
     const task = dailyTasks.find((task) => task._id === id);
+    if (!task) {
+      toast.error("Task not found");
+      return;
+    }
 
-    setLoadingToggle(id); // Start loading for this task
+    setLoadingToggle(id);
 
     try {
       await axios.post(`http://localhost:8080/api/tasks/mark-read/${id}`, {
@@ -105,7 +110,7 @@ const DailyTask = () => {
         task: isCompleted
           ? null
           : {
-              id: task._id,
+              _id: task._id,  // Use _id instead of id
               title: task.title,
               description: task.description,
             },
@@ -116,7 +121,6 @@ const DailyTask = () => {
         const updated = isCompleted
           ? prev.filter((taskId) => taskId !== id)
           : [...prev, id];
-        // Sync with localStorage
         localStorage.setItem("completedTasks", JSON.stringify(updated));
         return updated;
       });
@@ -126,7 +130,7 @@ const DailyTask = () => {
       console.error("Error updating task status", error);
       toast.error("Failed to update task status");
     } finally {
-      setLoadingToggle(null); // Stop loading
+      setLoadingToggle(null);
     }
   };
 
@@ -210,7 +214,7 @@ const DailyTask = () => {
                         {completedTasks.includes(task._id) ? (
                           <Button
                             type="warning"
-                            className="w-full flex items-center justify-center gap-2 "
+                            className="w-full flex items-center justify-center gap-2"
                             onClick={() => toggleComplete(task._id)}
                             disabled={loadingToggle === task._id}
                           >

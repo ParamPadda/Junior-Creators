@@ -23,7 +23,7 @@ const Dashboard = () => {
   const [editProfileVisible, setEditProfileVisible] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
-
+  const [allTasks, setAllTasks] = useState([]);
   console.log(blogs);
 
   const user = {
@@ -66,9 +66,20 @@ const Dashboard = () => {
       toast.error("Failed to load blogs.");
     }
   };
+const fetchAllTasks = async () => {
+  try {
+    const response = await axios.get("http://localhost:8080/api/tasks/all");
+    if (response.data.success) {
+      setAllTasks(response.data.tasks);
+    }
+  } catch (error) {
+    console.error("Failed to fetch all tasks", error);
+  }
+};
+
 
   const fetchCompletedTasks = async () => {
-    const email = localStorage.getItem("email");
+  const email = localStorage.getItem("userEmail") || localStorage.getItem("email");
     if (!email) return;
 
     try {
@@ -89,7 +100,11 @@ const Dashboard = () => {
   useEffect(() => {
     fetchBlogs();
     fetchCompletedTasks();
+    fetchAllTasks();
   }, []);
+
+
+  
 
 const handleDeleteBlog = async (blogId) => {
   const email = localStorage.getItem("email");
@@ -102,14 +117,19 @@ const handleDeleteBlog = async (blogId) => {
   if (!window.confirm("Are you sure you want to delete this blog?")) return;
 
   try {
-    const encodedEmail = encodeURIComponent(email);
-const response = await axios.delete(
-  `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${encodedEmail}`
-);
+    // const encodedEmail = encodeURIComponent(email);
 
-    // const response = await axios.delete(
-    //   `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${email}`
-    // );
+const response = await axios.delete(
+  `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${email}`
+);
+// const response = await axios.delete("http://localhost:8080/api/blogs/deleteBlog", {
+//     data: {
+//       blogId,
+//       email
+//     }
+//   });
+
+    
 
     if (response.data.success) {
       toast.success("Blog deleted successfully");
@@ -253,20 +273,24 @@ const response = await axios.delete(
               List of Daily Tasks completed by you, for those who are having
               subscription.
             </p>
-           {completedTasks.length === 0 ? (
+          {completedTasks.length === 0 ? (
   <p className="text-gray-500 text-sm">No completed tasks yet.</p>
 ) : (
   <ul className="list-disc list-inside space-y-1">
-    {completedTasks.map((task) => (
-      <li key={task._id} className="text-gray-700">
-         <span className="font-semibold">{task.title}</span>
-        {task.blogTitle && (
-          <>
-            {" "}– Blog: <span className="text-blue-600 italic">{task.blogTitle}</span>
-          </>
-        )}
-      </li>
-    ))}
+    {completedTasks.map((taskId) => {
+      const task = allTasks.find((t) => t._id === taskId);
+      if (!task) return null;
+      return (
+        <li key={task._id} className="text-gray-700">
+          <span className="font-semibold">{task.title}</span>
+          {task.blogTitle && (
+            <>
+              {" "}– Blog: <span className="text-blue-600 italic">{task.blogTitle}</span>
+            </>
+          )}
+        </li>
+      );
+    })}
   </ul>
 )}
 
