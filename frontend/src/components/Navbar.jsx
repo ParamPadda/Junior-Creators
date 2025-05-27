@@ -96,16 +96,16 @@ const Navbar = () => {
           <button className='cursor-pointer' onClick={toggleSidebar}><FontAwesomeIcon size='lg' icon={faTimes} /></button>
         </div>
         <ul className='flex flex-col gap-5 p-6 text-[#1E2A38]'>
-          <li className='cursor-pointer  hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Home</li>
-          <li className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>About</li>
-          <li className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Daily Tasks</li>
-          <li className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Quiz Zone</li>
+          <Link to='/home' className='cursor-pointer  hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Home</Link>
+          <Link to="/home/about" className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>About</Link>
+          <Link  to='/home/tasks' className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Daily Tasks</Link>
+          <Link  to='/home/quiz' className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Quiz Zone</Link>
           <Link to='/home/learning' className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Learning Corner</Link>
-          <li className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Explore Blogs</li>
+          <Link to='/home/exploreBlogs' className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Explore Blogs</Link>
           <Link to="/home/dashboard" className='cursor-pointer   hover:border-1 border-[#1E2A38] rounded p-1 transition-transform transform hover:scale-105'>Profile Dashboard</Link>
         </ul>
         <div  className=' p-3  bg-orange-500 cursor-pointer hover:bg-orange-600 inline-block ml-3 rounded text-white'>
-          <button className='cursor-pointer'>+ Create blog</button>
+          <button onClick={() => navigate('/createBlog')} className='cursor-pointer'>+ Create blog</button>
         </div>
       </div>
 

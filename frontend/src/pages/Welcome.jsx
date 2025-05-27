@@ -3,6 +3,8 @@ import axios from "axios";
 import instance from "../../AxiosInstance";
 import img4 from "../assets/side.png";
 import Login from "../components/Login";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -49,7 +51,7 @@ const Welcome = () => {
       console.log("📤 Sending login  data:", values);
       const response = await axios.post("http://localhost:8080/api/auth/login", values);
       // notify();
-      console.log("✅  login Success:", response.data);
+      console.log("  login Success:", response.data);
       // console.log(response.data.jwtToken);
       localStorage.setItem("jwtToken", response.data.jwtToken);
       localStorage.setItem("email", response.data.email);
@@ -58,30 +60,31 @@ const Welcome = () => {
       navigate("/home");
     } catch (error) {
       if (error.response) {
-        console.error("🚨 Login failed:", error.response.data); // Logs exact error from backend
+        console.error(" Login failed:", error.response.data); // Logs exact error from backend
       } else {
-        console.error("❌ Network error:", error.message);
+        console.error("Network error:", error.message);
       }
     }
   };
 
   const handleRegister = async (values) => {
     try {
-      console.log("📤 Sending data:", values);
+      console.log(" Sending data:", values);
       const response = await axios.post(
         "http://localhost:8080/api/auth/signup",
         values
       );
       // notify();
-      console.log("✅ Success:", response.data);
+      console.log("Success:", response.data);
+      toast.success("User registered successfully");
       setRegisterOpen(false);
       setLoginOpen(true); //it helps me to show  login modal
      
     } catch (error) {
       if (error.response) {
-        console.error("🚨 Signup failed:", error.response.data); // Logs exact error from backend
+        console.error(" Signup failed:", error.response.data); // Logs exact error from backend
       } else {
-        console.error("❌ Network error:", error.message);
+        console.error(" Network error:", error.message);
       }
     }
   };
@@ -102,6 +105,7 @@ const Welcome = () => {
         });
     
         message.success("Password updated successfully!");
+         toast.success("Password updated successfully!");
         console.log("Your Updated Password",values.confirmPassword);
     
         setTimeout(() => {
@@ -161,7 +165,9 @@ const Welcome = () => {
       );
       // notify();
       message.success("email sent successfully!");
+
       console.log("✅ Success:", response.data);
+      toast.success("Email sent successfully!");
       setForgetOpen(false);
      setOtpOpen(true); // open otp modal to verfiy otp send by backend
      

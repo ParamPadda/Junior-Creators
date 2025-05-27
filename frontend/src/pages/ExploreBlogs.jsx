@@ -138,7 +138,8 @@ const handleSearch = (term) => {
 
                   <div>
                     <h4 className="font-semibold text-[#1E2A38]">{blog.title}</h4>
-                    <p className="text-sm text-gray-600">By Unknown</p>
+                    <p className="text-sm text-gray-600">By {blog.author?.name || "Unknown"}</p>
+
                   </div>
                 </div>
               ))}
@@ -195,10 +196,51 @@ const handleSearch = (term) => {
                 </audio>
               )}
             </div>
-            <div className="w-1/3 border-l pl-4">
-              <h3 className="font-semibold mb-2">Comments</h3>
-              <p className="text-sm text-gray-500">(To be implemented)</p>
-            </div>
+           <div className="w-1/3 border-l border-gray-300 pl-4 flex flex-col">
+  <h3 className="font-semibold mb-4 border-b border-gray-300 pb-2">Comments</h3>
+
+  <div className="flex-1 overflow-y-auto max-h-[400px] space-y-4 pr-2">
+    {[
+      {
+        id: 1,
+        username: "JaneDoe92",
+        avatar: "https://i.pravatar.cc/40?img=3",
+        comment: "Loved this blog! The explanations were very clear and engaging.",
+        time: "2 hours ago",
+      },
+      {
+        id: 2,
+        username: "ScienceGeek",
+        avatar: "https://i.pravatar.cc/40?img=5",
+        comment: "Great insights, especially about the space exploration part.",
+        time: "5 hours ago",
+      },
+      {
+        id: 3,
+        username: "NatureLover",
+        avatar: "https://i.pravatar.cc/40?img=7",
+        comment: "Informative read! I learned a lot about ocean life.",
+        time: "1 day ago",
+      },
+    ].map(({ id, username, avatar, comment, time }) => (
+      <div key={id} className="flex gap-3 items-start bg-gray-50 rounded-lg p-3 shadow-sm hover:shadow-md transition">
+        <img
+          src={avatar}
+          alt={`${username}'s avatar`}
+          className="w-10 h-10 rounded-full object-cover"
+        />
+        <div>
+          <div className="flex items-center justify-between">
+            <p className="font-semibold text-[#1E2A38]">{username}</p>
+            <span className="text-xs text-gray-400">{time}</span>
+          </div>
+          <p className="text-gray-700 text-sm mt-1">{comment}</p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
           </div>
         )}
       </Modal>

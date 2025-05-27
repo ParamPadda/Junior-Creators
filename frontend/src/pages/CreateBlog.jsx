@@ -8,6 +8,8 @@ import { faHome, faUpload, faMicrophone, faPaperPlane } from '@fortawesome/free-
 import { faBold, faItalic, faUnderline, faPalette, faImage, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import 'antd/dist/reset.css'; 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
 
 
@@ -50,7 +52,8 @@ formData.append('email', userEmail);
           'Content-Type': 'multipart/form-data',
         },
       });
-      message.success('Blog uploaded successfully!');
+      // message.success('Blog uploaded successfully!');
+      toast.success("Blog uploaded successfully!");
       form.resetFields();
       setImageFile(null);
       setAudioFile(null);

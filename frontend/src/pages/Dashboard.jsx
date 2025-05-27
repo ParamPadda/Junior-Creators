@@ -24,14 +24,13 @@ const Dashboard = () => {
   const [blogs, setBlogs] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
-  console.log(blogs);
+  const [userBadges, setUserBadges] = useState([]);
 
   const user = {
     name: "Jane Doe",
     email: "jane.doe@example.com",
     avatar:
       "https://images.pexels.com/photos/14073969/pexels-photo-14073969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-    badge: "Pro Blogger",
     streak: 3,
     wordCount: 15230,
   };
@@ -54,34 +53,31 @@ const Dashboard = () => {
 
   const fetchBlogs = async () => {
     const email = localStorage.getItem("email");
-    console.log(email);
     try {
       const response = await axios.get(
         `http://localhost:8080/api/blogs/getUserBlogs/${email}`
       );
-      console.log(response?.data, "response");
       setBlogs(response.data.blogs);
     } catch (error) {
       console.error("Failed to fetch blogs:", error);
       toast.error("Failed to load blogs.");
     }
   };
-const fetchAllTasks = async () => {
-  try {
-    const response = await axios.get("http://localhost:8080/api/tasks/all");
-    if (response.data.success) {
-      setAllTasks(response.data.tasks);
-    }
-  } catch (error) {
-    console.error("Failed to fetch all tasks", error);
-  }
-};
 
+  const fetchAllTasks = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/tasks/all");
+      if (response.data.success) {
+        setAllTasks(response.data.tasks);
+      }
+    } catch (error) {
+      console.error("Failed to fetch all tasks", error);
+    }
+  };
 
   const fetchCompletedTasks = async () => {
-  const email = localStorage.getItem("userEmail") || localStorage.getItem("email");
+    const email = localStorage.getItem("userEmail") || localStorage.getItem("email");
     if (!email) return;
-
     try {
       const response = await axios.get(
         `http://localhost:8080/api/tasks/getCompletedTasks/${email}`
@@ -97,52 +93,43 @@ const fetchAllTasks = async () => {
     }
   };
 
+  const fetchUserBadges = async () => {
+    const email = localStorage.getItem("email");
+    if (!email) return;
+    try {
+      const response = await axios.get(`http://localhost:8080/api/badges/user/${email}`);
+      setUserBadges(response.data);
+    } catch (error) {
+      console.error("Failed to fetch user badges:", error);
+      toast.error("Failed to load user badges");
+    }
+  };
+
   useEffect(() => {
     fetchBlogs();
     fetchCompletedTasks();
     fetchAllTasks();
+    fetchUserBadges();
   }, []);
 
-
-  
-
-const handleDeleteBlog = async (blogId) => {
-  const email = localStorage.getItem("email");
-  console.log("Deleting blog with ID:", blogId);
-  if (!blogId) {
-    console.error("No blog ID provided.");
-    return;
-  }
-
-  if (!window.confirm("Are you sure you want to delete this blog?")) return;
-
-  try {
-    // const encodedEmail = encodeURIComponent(email);
-
-const response = await axios.delete(
-  `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${email}`
-);
-// const response = await axios.delete("http://localhost:8080/api/blogs/deleteBlog", {
-//     data: {
-//       blogId,
-//       email
-//     }
-//   });
-
-    
-
-    if (response.data.success) {
-      toast.success("Blog deleted successfully");
-      fetchBlogs();
-    } else {
-      toast.error(response.data.message || "Failed to delete blog");
+  const handleDeleteBlog = async (blogId) => {
+    const email = localStorage.getItem("email");
+    if (!blogId || !window.confirm("Are you sure you want to delete this blog?")) return;
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/blogs/deleteBlog/${blogId}/${email}`
+      );
+      if (response.data.success) {
+        toast.success("Blog deleted successfully");
+        fetchBlogs();
+      } else {
+        toast.error(response.data.message || "Failed to delete blog");
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      toast.error("Server error: Failed to delete blog");
     }
-  } catch (error) {
-    console.error("Error deleting blog:", error);
-    toast.error("Server error: Failed to delete blog");
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6 overflow-x-hidden">
@@ -150,9 +137,7 @@ const response = await axios.delete(
         Profile Dashboard
       </h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Section */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Profile Card */}
           <div className="bg-white p-4 rounded-2xl shadow-md flex gap-4 items-center">
             <img
               src={user.avatar}
@@ -164,9 +149,23 @@ const response = await axios.delete(
               <p className="text-sm text-gray-600 flex items-center gap-1">
                 <FontAwesomeIcon icon={faEnvelope} /> {user.email}
               </p>
-              <p className="text-sm text-yellow-500 flex items-center gap-1">
-                <FontAwesomeIcon icon={faStar} /> {user.badge}
-              </p>
+              {userBadges.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {userBadges.map((badge, index) => {
+                    const iconName = badge.icon.replace('fa-', '');
+                    return (
+                      <span
+                        key={index}
+                        className={`text-${badge.color} flex items-center gap-1`}
+                      >
+                        <FontAwesomeIcon icon={iconName} /> {badge.title}
+                      </span>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No badges assigned</p>
+              )}
             </div>
             <Button
               className="ml-auto"
@@ -176,7 +175,6 @@ const response = await axios.delete(
             </Button>
           </div>
 
-          {/* Stats */}
           <div className="bg-white p-4 rounded-2xl shadow-md grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm text-gray-600">Word Count</p>
@@ -196,7 +194,6 @@ const response = await axios.delete(
             </div>
           </div>
 
-          {/* Blog List */}
           <div className="bg-white p-4 rounded-2xl shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Your Blogs</h3>
@@ -213,26 +210,20 @@ const response = await axios.delete(
                   <div>
                     <p className="font-medium">{blog.title}</p>
                     <p className="font-medium">{blog.about}</p>
-                    {/* Uncomment if needed:
-                    <p className="text-sm text-gray-500">
-                      {blog.status} | <FontAwesomeIcon icon={faHeart} /> {blog.likes} | <FontAwesomeIcon icon={faComment} /> {blog.comments} | Views: {blog.views}
-                    </p> */}
                   </div>
                   <div className="flex gap-2">
                     <Button icon={<FontAwesomeIcon icon={faEdit} />} />
                     <Button
-  danger
-  icon={<FontAwesomeIcon icon={faTrash} />}
-  onClick={() => handleDeleteBlog(blog.id)}
-/>
-
+                      danger
+                      icon={<FontAwesomeIcon icon={faTrash} />}
+                      onClick={() => handleDeleteBlog(blog.id)}
+                    />
                   </div>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Avatar Selection */}
           <div className="bg-white p-4 rounded-2xl shadow-md">
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-lg font-semibold">Your Avatar</h3>
@@ -248,7 +239,6 @@ const response = await axios.delete(
           </div>
         </div>
 
-        {/* Right Section - Notifications and Daily Task */}
         <div className="flex flex-col gap-6">
           <div className="bg-white p-4 rounded-2xl shadow-md h-full">
             <h3 className="text-lg font-semibold mb-3">
@@ -273,32 +263,30 @@ const response = await axios.delete(
               List of Daily Tasks completed by you, for those who are having
               subscription.
             </p>
-          {completedTasks.length === 0 ? (
-  <p className="text-gray-500 text-sm">No completed tasks yet.</p>
-) : (
-  <ul className="list-disc list-inside space-y-1">
-    {completedTasks.map((taskId) => {
-      const task = allTasks.find((t) => t._id === taskId);
-      if (!task) return null;
-      return (
-        <li key={task._id} className="text-gray-700">
-          <span className="font-semibold">{task.title}</span>
-          {task.blogTitle && (
-            <>
-              {" "}– Blog: <span className="text-blue-600 italic">{task.blogTitle}</span>
-            </>
-          )}
-        </li>
-      );
-    })}
-  </ul>
-)}
-
+            {completedTasks.length === 0 ? (
+              <p className="text-gray-500 text-sm">No completed tasks yet.</p>
+            ) : (
+              <ul className="list-disc list-inside space-y-1">
+                {completedTasks.map((taskId) => {
+                  const task = allTasks.find((t) => t._id === taskId);
+                  if (!task) return null;
+                  return (
+                    <li key={task._id} className="text-gray-700">
+                      <span className="font-semibold">{task.title}</span>
+                      {task.blogTitle && (
+                        <>
+                          {" "}– Blog: <span className="text-blue-600 italic">{task.blogTitle}</span>
+                        </>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Modals */}
       <Modal
         open={avatarModalVisible}
         onCancel={() => setAvatarModalVisible(false)}
@@ -325,7 +313,6 @@ const response = await axios.delete(
         title="Edit Profile"
       >
         <form>
-          {/* Your edit profile form fields here */}
           <Button type="primary" htmlType="submit">
             Save Changes
           </Button>
